@@ -1,0 +1,161 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Video {
+  id: ID!
+  user_id: Int!
+  title: String!
+  url: String!
+  description: String!
+  category: String!
+  location: String!
+  views: Int!
+  day: Int!
+  month: Int!
+  year: Int!
+  thumbnail: String!
+  likes: Int!
+  dislikes: Int!
+  age_restriction: Boolean!
+  privacy: String!
+  premium: Boolean!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  premium: Boolean!
+  img_url: String!
+  subscribers: Int!
+}
+
+type Playlist {
+  id: ID!
+  user_id: Int!
+  name: String
+  privacy: String!
+  description: String!
+  views: Int!
+  day: Int!
+  month: Int!
+  year: Int!
+}
+
+type Comment {
+  id: ID!
+  user_id: Int!
+  video_id: Int!
+  likes: Int!
+  dislikes: Int!
+  description: String!
+  day: Int!
+  month: Int!
+  year: Int!
+}
+
+type Reply{
+  id: ID!
+  comment_id: Int!
+  user_id: Int!
+  likes: Int!
+  dislikes: Int!
+  description: String!
+  day: Int!
+  month: Int!
+  year: Int!
+}
+
+type Query {
+  videos: [Video!]!
+  comments: [Comment!]!
+  playlists: [Playlist!]!
+  users: [User!]!
+  replies(comment_id: ID!): [Reply!]!
+
+  getUser(id: ID!): User!
+  getUserByEmail(email: String!): User!
+  getVideo(id: ID!): Video!
+  getAllComments(video_id: Int!): [Comment!]!
+}
+
+input newVideo {
+  user_id: Int!
+  title: String!
+  url: String!
+  description: String!
+  category: String!
+  location: String!
+  views: Int!
+  day: Int!
+  month: Int!
+  year: Int!
+  thumbnail: String!
+  likes: Int!
+  dislikes: Int!
+  age_restriction: Boolean!
+  privacy: String!
+  premium: Boolean!
+}
+
+input newUser {
+  name: String!
+  email: String!
+  premium: Boolean!
+  img_url: String!
+  subscribers: Int!
+}
+
+input newPlaylist {
+  user_id: Int!
+  name: String
+  privacy: String!
+  description: String!
+  views: Int!
+  day: Int!
+  month: Int!
+  year: Int!
+}
+
+input newComment {
+  user_id: Int!
+  video_id: Int!
+  likes: Int!
+  dislikes: Int!
+  description: String!
+  day: Int!
+  month: Int!
+  year: Int!
+}
+
+input newReply {
+  comment_id: Int!
+  user_id: Int!
+  likes: Int!
+  dislikes: Int!
+  description: String!
+  day: Int!
+  month: Int!
+  year: Int!
+}
+
+type Mutation {
+  createVideo(input: newVideo): Video!
+  updateVideo(id: ID!, input: newVideo): Video!
+  deleteVideo(id: ID!): Boolean!
+
+  createPlaylist(input: newPlaylist): Playlist!
+  updatePlaylist(id: ID!, input: newPlaylist): Playlist!
+  deletePlaylist(id: ID!): Boolean!
+
+  createUser(input: newUser): User!
+
+  createComment(input: newComment): Comment!
+  updateComment(id: ID!, input: newComment): Comment!
+  deleteComment(id: ID!): Boolean!
+
+  createReply(input: newReply): Reply!
+  updateReply(id: ID!, input: newReply): Reply!
+  deleteReply(id: ID!): Boolean!
+}
