@@ -43,7 +43,38 @@ func (r *mutationResolver) CreateVideo(ctx context.Context, input *model.NewVide
 }
 
 func (r *mutationResolver) UpdateVideo(ctx context.Context, id string, input *model.NewVideo) (*model.Video, error) {
-	panic(fmt.Errorf("not implemented"))
+	var video model.Video
+
+	err := r.DB.Model(&video).Where("id = ?", id).First()
+
+	if err != nil {
+		return nil, errors.New("failed to get video")
+	}
+
+	video.UserID = input.UserID
+	video.Title = input.Title
+	video.URL = input.URL
+	video.Description = input.Description
+	video.Category = input.Category
+	video.Location = input.Location
+	video.Views = input.Views
+	video.Day = input.Day
+	video.Month = input.Month
+	video.Year = input.Year
+	video.Thumbnail = input.Thumbnail
+	video.Likes = input.Likes
+	video.Dislikes = input.Dislikes
+	video.AgeRestriction = input.AgeRestriction
+	video.Privacy = input.Privacy
+	video.Premium = input.Premium
+
+	_, error := r.DB.Model(&video).Where("id = ?", id).Update()
+
+	if error != nil {
+		return nil, errors.New("failed to update the video!")
+	}
+
+	return &video, nil
 }
 
 func (r *mutationResolver) DeleteVideo(ctx context.Context, id string) (bool, error) {
@@ -71,12 +102,43 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *model.NewUser)
 		Premium:     input.Premium,
 		ImgURL:      input.ImgURL,
 		Subscribers: input.Subscribers,
+		LikedVideo:  input.LikedVideo,
+		DislikedVideo: input.DislikedVideo,
+		LikedComment: input.LikedComment,
+		DislikedComment: input.DislikedComment,
 	}
-
 	_, error := r.DB.Model(&user).Insert()
 
 	if error != nil {
 		return nil, errors.New("failed to insert")
+	}
+
+	return &user, nil
+}
+
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input *model.NewUser) (*model.User, error) {
+	var user model.User
+
+	err := r.DB.Model(&user).Where("id = ?", id).First()
+
+	if err != nil {
+		return nil, errors.New("failed to get user")
+	}
+
+	user.Name = input.Name
+	user.Email = input.Email
+	user.ImgURL = input.ImgURL
+	user.Subscribers = input.Subscribers
+	user.Premium = input.Premium
+	user.LikedVideo = input.LikedVideo
+	user.DislikedVideo = input.DislikedVideo
+	user.LikedComment = input.LikedComment
+	user.DislikedComment = input.DislikedComment
+
+	_, error := r.DB.Model(&user).Where("id = ?", id).Update()
+
+	if error != nil {
+		return nil, errors.New("failed to update user")
 	}
 
 	return &user, nil
@@ -118,13 +180,13 @@ func (r *mutationResolver) CreateReply(ctx context.Context, input *model.NewRepl
 
 	reply = model.Reply{
 		CommentID:   input.CommentID,
-		UserID: input.UserID,
+		UserID:      input.UserID,
 		Likes:       input.Likes,
 		Dislikes:    input.Dislikes,
 		Description: input.Description,
-		Day: input.Day,
-		Month: input.Month,
-		Year: input.Year,
+		Day:         input.Day,
+		Month:       input.Month,
+		Year:        input.Year,
 	}
 
 	_, err := r.DB.Model(&reply).Insert()
@@ -147,7 +209,7 @@ func (r *mutationResolver) DeleteReply(ctx context.Context, id string) (bool, er
 func (r *queryResolver) Videos(ctx context.Context) ([]*model.Video, error) {
 	var videos []*model.Video
 
-	error := r.DB.Model(&videos).Select()
+	error := r.DB.Model(&videos).Order("id").Select()
 
 	if error != nil {
 		return nil, errors.New("failed to get all videos!")
@@ -191,7 +253,6 @@ func (r *queryResolver) Replies(ctx context.Context, commentID string) ([]*model
 func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
 	var user model.User
 
-	//error := r.DB.Model(&user).Where("id = ", id).First()
 	error := r.DB.Model(&user).Where("id = ?", id).First()
 
 	if error != nil {

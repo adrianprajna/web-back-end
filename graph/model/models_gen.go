@@ -39,12 +39,16 @@ type Reply struct {
 }
 
 type User struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	Premium     bool   `json:"premium"`
-	ImgURL      string `json:"img_url"`
-	Subscribers int    `json:"subscribers"`
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Email           string `json:"email"`
+	Premium         bool   `json:"premium"`
+	ImgURL          string `json:"img_url"`
+	Subscribers     int    `json:"subscribers"`
+	LikedVideo      string `json:"liked_video"`
+	DislikedVideo   string `json:"disliked_video"`
+	LikedComment    string `json:"liked_comment"`
+	DislikedComment string `json:"disliked_comment"`
 }
 
 type Video struct {
@@ -101,11 +105,15 @@ type NewReply struct {
 }
 
 type NewUser struct {
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	Premium     bool   `json:"premium"`
-	ImgURL      string `json:"img_url"`
-	Subscribers int    `json:"subscribers"`
+	Name            string `json:"name"`
+	Email           string `json:"email"`
+	Premium         bool   `json:"premium"`
+	ImgURL          string `json:"img_url"`
+	Subscribers     int    `json:"subscribers"`
+	LikedVideo      string `json:"liked_video"`
+	DislikedVideo   string `json:"disliked_video"`
+	LikedComment    string `json:"liked_comment"`
+	DislikedComment string `json:"disliked_comment"`
 }
 
 type NewVideo struct {
