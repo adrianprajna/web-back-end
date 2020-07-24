@@ -20,6 +20,8 @@ type Video {
   age_restriction: Boolean!
   privacy: String!
   premium: Boolean!
+  length: Int!
+  time: String!
 }
 
 type User {
@@ -71,17 +73,41 @@ type Reply{
   year: Int!
 }
 
+type Channel {
+  id: ID!
+  user_id: Int!
+  background_url: String!
+  description: String!
+  join_date: String!
+  links: String!
+}
+
+type Post {
+  id: ID!
+  channel_id: Int!
+  description: String!
+  picture: String!
+  date: String!
+  likes: Int!
+  dislikes: Int!
+}
+
 type Query {
   videos: [Video!]!
   comments: [Comment!]!
   playlists: [Playlist!]!
   users: [User!]!
   replies(comment_id: ID!): [Reply!]!
+  channel(id: ID!): Channel!
+  posts(channel_id: Int!): [Post!]!
+  post(id: ID!): Post!
 
   getUser(id: ID!): User!
   getUserByEmail(email: String!): User!
   getVideo(id: ID!): Video!
   getAllComments(video_id: Int!): [Comment!]!
+  getChannelByUser(user_id: Int!): Channel!
+  getAllVideosByTitle(title: String!): [Video!]!
 }
 
 input newVideo {
@@ -101,6 +127,8 @@ input newVideo {
   age_restriction: Boolean!
   privacy: String!
   premium: Boolean!
+  length: Int!
+  time: String!
 }
 
 input newUser {
@@ -115,6 +143,14 @@ input newUser {
   disliked_comment: String!
 }
 
+input newChannel {
+  user_id: Int!
+  background_url: String!
+  description: String!
+  join_date: String!
+  links: String!
+}
+
 input newPlaylist {
   user_id: Int!
   name: String
@@ -124,6 +160,15 @@ input newPlaylist {
   day: Int!
   month: Int!
   year: Int!
+}
+
+input newPost {
+  channel_id: Int!
+  description: String!
+  picture: String!
+  date: String!
+  likes: Int!
+  dislikes: Int!
 }
 
 input newComment {
@@ -167,4 +212,10 @@ type Mutation {
   createReply(input: newReply): Reply!
   updateReply(id: ID!, input: newReply): Reply!
   deleteReply(id: ID!): Boolean!
+
+  createChannel(input: newChannel): Channel!
+  updateChannel(id: ID!, input: newChannel): Channel!
+
+  createPost(input: newPost): Post!
+  updatePost(id: ID!, input: newPost): Post!
 }

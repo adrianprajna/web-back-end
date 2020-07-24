@@ -31,6 +31,8 @@ func (r *mutationResolver) CreateVideo(ctx context.Context, input *model.NewVide
 		AgeRestriction: input.AgeRestriction,
 		Privacy:        input.Privacy,
 		Premium:        input.Premium,
+		Length:         input.Length,
+		Time:           input.Time,
 	}
 
 	_, err := r.DB.Model(&video).Insert()
@@ -67,6 +69,8 @@ func (r *mutationResolver) UpdateVideo(ctx context.Context, id string, input *mo
 	video.AgeRestriction = input.AgeRestriction
 	video.Privacy = input.Privacy
 	video.Premium = input.Premium
+	video.Length = input.Length
+	video.Time = input.Time
 
 	_, error := r.DB.Model(&video).Where("id = ?", id).Update()
 
@@ -97,14 +101,14 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *model.NewUser)
 	var user model.User
 
 	user = model.User{
-		Name:        input.Name,
-		Email:       input.Email,
-		Premium:     input.Premium,
-		ImgURL:      input.ImgURL,
-		Subscribers: input.Subscribers,
-		LikedVideo:  input.LikedVideo,
-		DislikedVideo: input.DislikedVideo,
-		LikedComment: input.LikedComment,
+		Name:            input.Name,
+		Email:           input.Email,
+		Premium:         input.Premium,
+		ImgURL:          input.ImgURL,
+		Subscribers:     input.Subscribers,
+		LikedVideo:      input.LikedVideo,
+		DislikedVideo:   input.DislikedVideo,
+		LikedComment:    input.LikedComment,
 		DislikedComment: input.DislikedComment,
 	}
 	_, error := r.DB.Model(&user).Insert()
@@ -206,6 +210,55 @@ func (r *mutationResolver) DeleteReply(ctx context.Context, id string) (bool, er
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *mutationResolver) CreateChannel(ctx context.Context, input *model.NewChannel) (*model.Channel, error) {
+	var channel model.Channel
+
+	channel = model.Channel{
+		UserID:        input.UserID,
+		BackgroundURL: input.BackgroundURL,
+		Description:   input.Description,
+		JoinDate:      input.JoinDate,
+		Links:         input.Links,
+	}
+
+	_, err := r.DB.Model(&channel).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &channel, nil
+}
+
+func (r *mutationResolver) UpdateChannel(ctx context.Context, id string, input *model.NewChannel) (*model.Channel, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) CreatePost(ctx context.Context, input *model.NewPost) (*model.Post, error) {
+	var post model.Post
+
+	post = model.Post{
+		ChannelID:   input.ChannelID,
+		Description: input.Description,
+		Picture:     input.Picture,
+		Date:        input.Date,
+		Likes:       input.Likes,
+		Dislikes:    input.Dislikes,
+	}
+
+	_, err := r.DB.Model(&post).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &post, nil
+}
+
+func (r *mutationResolver) UpdatePost(ctx context.Context, id string, input *model.NewPost) (*model.Post, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Videos(ctx context.Context) ([]*model.Video, error) {
 	var videos []*model.Video
 
@@ -248,6 +301,42 @@ func (r *queryResolver) Replies(ctx context.Context, commentID string) ([]*model
 	}
 
 	return replies, nil
+}
+
+func (r *queryResolver) Channel(ctx context.Context, id string) (*model.Channel, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).First()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &channel, nil
+}
+
+func (r *queryResolver) Posts(ctx context.Context, channelID int) ([]*model.Post, error) {
+	var posts []*model.Post
+
+	err := r.DB.Model(&posts).Where("channel_id = ?", channelID).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
+	var post model.Post
+
+	err := r.DB.Model(&post).Where("id = ?", id).First()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &post, nil
 }
 
 func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
@@ -296,6 +385,30 @@ func (r *queryResolver) GetAllComments(ctx context.Context, videoID int) ([]*mod
 	}
 
 	return comments, nil
+}
+
+func (r *queryResolver) GetChannelByUser(ctx context.Context, userID int) (*model.Channel, error) {
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("user_id = ?", userID).First()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &channel, nil
+}
+
+func (r *queryResolver) GetAllVideosByTitle(ctx context.Context, title string) ([]*model.Video, error) {
+	var videos []*model.Video
+
+	_, err := r.DB.Query(&videos, "SELECT * FROM videos WHERE LOWER(title) like LOWER(?)", title)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return videos, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

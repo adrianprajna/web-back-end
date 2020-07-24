@@ -2,6 +2,15 @@
 
 package model
 
+type Channel struct {
+	ID            string `json:"id"`
+	UserID        int    `json:"user_id"`
+	BackgroundURL string `json:"background_url"`
+	Description   string `json:"description"`
+	JoinDate      string `json:"join_date"`
+	Links         string `json:"links"`
+}
+
 type Comment struct {
 	ID          string `json:"id"`
 	UserID      int    `json:"user_id"`
@@ -24,6 +33,16 @@ type Playlist struct {
 	Day         int     `json:"day"`
 	Month       int     `json:"month"`
 	Year        int     `json:"year"`
+}
+
+type Post struct {
+	ID          string `json:"id"`
+	ChannelID   int    `json:"channel_id"`
+	Description string `json:"description"`
+	Picture     string `json:"picture"`
+	Date        string `json:"date"`
+	Likes       int    `json:"likes"`
+	Dislikes    int    `json:"dislikes"`
 }
 
 type Reply struct {
@@ -69,6 +88,16 @@ type Video struct {
 	AgeRestriction bool   `json:"age_restriction"`
 	Privacy        string `json:"privacy"`
 	Premium        bool   `json:"premium"`
+	Length         int    `json:"length"`
+	Time           string `json:"time"`
+}
+
+type NewChannel struct {
+	UserID        int    `json:"user_id"`
+	BackgroundURL string `json:"background_url"`
+	Description   string `json:"description"`
+	JoinDate      string `json:"join_date"`
+	Links         string `json:"links"`
 }
 
 type NewComment struct {
@@ -91,6 +120,15 @@ type NewPlaylist struct {
 	Day         int     `json:"day"`
 	Month       int     `json:"month"`
 	Year        int     `json:"year"`
+}
+
+type NewPost struct {
+	ChannelID   int    `json:"channel_id"`
+	Description string `json:"description"`
+	Picture     string `json:"picture"`
+	Date        string `json:"date"`
+	Likes       int    `json:"likes"`
+	Dislikes    int    `json:"dislikes"`
 }
 
 type NewReply struct {
@@ -133,4 +171,6 @@ type NewVideo struct {
 	AgeRestriction bool   `json:"age_restriction"`
 	Privacy        string `json:"privacy"`
 	Premium        bool   `json:"premium"`
+	Length         int    `json:"length"`
+	Time           string `json:"time"`
 }
