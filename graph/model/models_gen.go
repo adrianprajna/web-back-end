@@ -21,6 +21,7 @@ type Comment struct {
 	Day         int    `json:"day"`
 	Month       int    `json:"month"`
 	Year        int    `json:"year"`
+	Time        string `json:"time"`
 }
 
 type Playlist struct {
@@ -58,16 +59,17 @@ type Reply struct {
 }
 
 type User struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Email           string `json:"email"`
-	Premium         bool   `json:"premium"`
-	ImgURL          string `json:"img_url"`
-	Subscribers     int    `json:"subscribers"`
-	LikedVideo      string `json:"liked_video"`
-	DislikedVideo   string `json:"disliked_video"`
-	LikedComment    string `json:"liked_comment"`
-	DislikedComment string `json:"disliked_comment"`
+	ID                string `json:"id"`
+	Name              string `json:"name"`
+	Email             string `json:"email"`
+	Premium           bool   `json:"premium"`
+	ImgURL            string `json:"img_url"`
+	Subscribers       int    `json:"subscribers"`
+	LikedVideo        string `json:"liked_video"`
+	DislikedVideo     string `json:"disliked_video"`
+	LikedComment      string `json:"liked_comment"`
+	DislikedComment   string `json:"disliked_comment"`
+	SubscribedChannel string `json:"subscribed_channel"`
 }
 
 type Video struct {
@@ -109,6 +111,7 @@ type NewComment struct {
 	Day         int    `json:"day"`
 	Month       int    `json:"month"`
 	Year        int    `json:"year"`
+	Time        string `json:"time"`
 }
 
 type NewPlaylist struct {
@@ -143,15 +146,16 @@ type NewReply struct {
 }
 
 type NewUser struct {
-	Name            string `json:"name"`
-	Email           string `json:"email"`
-	Premium         bool   `json:"premium"`
-	ImgURL          string `json:"img_url"`
-	Subscribers     int    `json:"subscribers"`
-	LikedVideo      string `json:"liked_video"`
-	DislikedVideo   string `json:"disliked_video"`
-	LikedComment    string `json:"liked_comment"`
-	DislikedComment string `json:"disliked_comment"`
+	Name              string `json:"name"`
+	Email             string `json:"email"`
+	Premium           bool   `json:"premium"`
+	ImgURL            string `json:"img_url"`
+	Subscribers       int    `json:"subscribers"`
+	LikedVideo        string `json:"liked_video"`
+	DislikedVideo     string `json:"disliked_video"`
+	LikedComment      string `json:"liked_comment"`
+	DislikedComment   string `json:"disliked_comment"`
+	SubscribedChannel string `json:"subscribed_channel"`
 }
 
 type NewVideo struct {

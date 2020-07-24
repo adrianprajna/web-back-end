@@ -59,6 +59,7 @@ type ComplexityRoot struct {
 		ID          func(childComplexity int) int
 		Likes       func(childComplexity int) int
 		Month       func(childComplexity int) int
+		Time        func(childComplexity int) int
 		UserID      func(childComplexity int) int
 		VideoID     func(childComplexity int) int
 		Year        func(childComplexity int) int
@@ -137,16 +138,17 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		DislikedComment func(childComplexity int) int
-		DislikedVideo   func(childComplexity int) int
-		Email           func(childComplexity int) int
-		ID              func(childComplexity int) int
-		ImgURL          func(childComplexity int) int
-		LikedComment    func(childComplexity int) int
-		LikedVideo      func(childComplexity int) int
-		Name            func(childComplexity int) int
-		Premium         func(childComplexity int) int
-		Subscribers     func(childComplexity int) int
+		DislikedComment   func(childComplexity int) int
+		DislikedVideo     func(childComplexity int) int
+		Email             func(childComplexity int) int
+		ID                func(childComplexity int) int
+		ImgURL            func(childComplexity int) int
+		LikedComment      func(childComplexity int) int
+		LikedVideo        func(childComplexity int) int
+		Name              func(childComplexity int) int
+		Premium           func(childComplexity int) int
+		SubscribedChannel func(childComplexity int) int
+		Subscribers       func(childComplexity int) int
 	}
 
 	Video struct {
@@ -307,6 +309,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Comment.Month(childComplexity), true
+
+	case "Comment.time":
+		if e.complexity.Comment.Time == nil {
+			break
+		}
+
+		return e.complexity.Comment.Time(childComplexity), true
 
 	case "Comment.user_id":
 		if e.complexity.Comment.UserID == nil {
@@ -931,6 +940,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Premium(childComplexity), true
 
+	case "User.subscribed_channel":
+		if e.complexity.User.SubscribedChannel == nil {
+			break
+		}
+
+		return e.complexity.User.SubscribedChannel(childComplexity), true
+
 	case "User.subscribers":
 		if e.complexity.User.Subscribers == nil {
 			break
@@ -1172,6 +1188,7 @@ type User {
   disliked_video: String!
   liked_comment: String!
   disliked_comment: String!
+  subscribed_channel: String!
 }
 
 type Playlist {
@@ -1196,6 +1213,7 @@ type Comment {
   day: Int!
   month: Int!
   year: Int!
+  time: String!
 }
 
 type Reply{
@@ -1278,6 +1296,7 @@ input newUser {
   disliked_video: String!
   liked_comment: String!
   disliked_comment: String!
+  subscribed_channel: String!
 }
 
 input newChannel {
@@ -1317,6 +1336,7 @@ input newComment {
   day: Int!
   month: Int!
   year: Int!
+  time: String!
 }
 
 input newReply {
@@ -2369,6 +2389,40 @@ func (ec *executionContext) _Comment_year(ctx context.Context, field graphql.Col
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Comment_time(ctx context.Context, field graphql.CollectedField, obj *model.Comment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Comment",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Time, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createVideo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4911,6 +4965,40 @@ func (ec *executionContext) _User_disliked_comment(ctx context.Context, field gr
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _User_subscribed_channel(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubscribedChannel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Video_id(ctx context.Context, field graphql.CollectedField, obj *model.Video) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6708,6 +6796,12 @@ func (ec *executionContext) unmarshalInputnewComment(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
+		case "time":
+			var err error
+			it.Time, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -6939,6 +7033,12 @@ func (ec *executionContext) unmarshalInputnewUser(ctx context.Context, obj inter
 		case "disliked_comment":
 			var err error
 			it.DislikedComment, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "subscribed_channel":
+			var err error
+			it.SubscribedChannel, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7181,6 +7281,11 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "year":
 			out.Values[i] = ec._Comment_year(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "time":
+			out.Values[i] = ec._Comment_time(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -7783,6 +7888,11 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "disliked_comment":
 			out.Values[i] = ec._User_disliked_comment(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "subscribed_channel":
+			out.Values[i] = ec._User_subscribed_channel(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

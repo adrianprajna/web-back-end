@@ -101,15 +101,16 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *model.NewUser)
 	var user model.User
 
 	user = model.User{
-		Name:            input.Name,
-		Email:           input.Email,
-		Premium:         input.Premium,
-		ImgURL:          input.ImgURL,
-		Subscribers:     input.Subscribers,
-		LikedVideo:      input.LikedVideo,
-		DislikedVideo:   input.DislikedVideo,
-		LikedComment:    input.LikedComment,
-		DislikedComment: input.DislikedComment,
+		Name:              input.Name,
+		Email:             input.Email,
+		Premium:           input.Premium,
+		ImgURL:            input.ImgURL,
+		Subscribers:       input.Subscribers,
+		LikedVideo:        input.LikedVideo,
+		DislikedVideo:     input.DislikedVideo,
+		LikedComment:      input.LikedComment,
+		DislikedComment:   input.DislikedComment,
+		SubscribedChannel: input.SubscribedChannel,
 	}
 	_, error := r.DB.Model(&user).Insert()
 
@@ -138,6 +139,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input *mod
 	user.DislikedVideo = input.DislikedVideo
 	user.LikedComment = input.LikedComment
 	user.DislikedComment = input.DislikedComment
+	user.SubscribedChannel = input.SubscribedChannel
 
 	_, error := r.DB.Model(&user).Where("id = ?", id).Update()
 
@@ -160,6 +162,7 @@ func (r *mutationResolver) CreateComment(ctx context.Context, input *model.NewCo
 		Day:         input.Day,
 		Month:       input.Month,
 		Year:        input.Year,
+		Time: input.Time,
 	}
 
 	_, err := r.DB.Model(&comment).Insert()
@@ -172,7 +175,31 @@ func (r *mutationResolver) CreateComment(ctx context.Context, input *model.NewCo
 }
 
 func (r *mutationResolver) UpdateComment(ctx context.Context, id string, input *model.NewComment) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented"))
+	var comment model.Comment
+
+	err := r.DB.Model(&comment).Where("id = ?", id).First()
+
+	if err != nil {
+		return nil, err
+	}
+
+	comment.UserID = input.UserID
+	comment.VideoID = input.VideoID
+	comment.Likes = input.Likes
+	comment.Dislikes = input.Dislikes
+	comment.Description = input.Description
+	comment.Day = input.Day
+	comment.Month = input.Month
+	comment.Year = input.Year
+	comment.Time = input.Time
+
+	_, error := r.DB.Model(&comment).Where("id = ?", id).Update()
+
+	if error != nil {
+		return nil, error
+	}
+
+	return &comment, nil
 }
 
 func (r *mutationResolver) DeleteComment(ctx context.Context, id string) (bool, error) {

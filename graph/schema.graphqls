@@ -35,6 +35,7 @@ type User {
   disliked_video: String!
   liked_comment: String!
   disliked_comment: String!
+  subscribed_channel: String!
 }
 
 type Playlist {
@@ -59,6 +60,7 @@ type Comment {
   day: Int!
   month: Int!
   year: Int!
+  time: String!
 }
 
 type Reply{
@@ -141,6 +143,7 @@ input newUser {
   disliked_video: String!
   liked_comment: String!
   disliked_comment: String!
+  subscribed_channel: String!
 }
 
 input newChannel {
@@ -180,6 +183,7 @@ input newComment {
   day: Int!
   month: Int!
   year: Int!
+  time: String!
 }
 
 input newReply {
