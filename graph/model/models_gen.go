@@ -24,6 +24,13 @@ type Comment struct {
 	Time        string `json:"time"`
 }
 
+type Membership struct {
+	ID     string `json:"id"`
+	UserID int    `json:"user_id"`
+	Plan   string `json:"plan"`
+	Date   string `json:"date"`
+}
+
 type Playlist struct {
 	ID          string  `json:"id"`
 	UserID      int     `json:"user_id"`
@@ -34,6 +41,7 @@ type Playlist struct {
 	Day         int     `json:"day"`
 	Month       int     `json:"month"`
 	Year        int     `json:"year"`
+	Videos      string  `json:"videos"`
 }
 
 type Post struct {
@@ -44,6 +52,7 @@ type Post struct {
 	Date        string `json:"date"`
 	Likes       int    `json:"likes"`
 	Dislikes    int    `json:"dislikes"`
+	Title       string `json:"title"`
 }
 
 type Reply struct {
@@ -70,6 +79,9 @@ type User struct {
 	LikedComment      string `json:"liked_comment"`
 	DislikedComment   string `json:"disliked_comment"`
 	SubscribedChannel string `json:"subscribed_channel"`
+	Playlists         string `json:"playlists"`
+	LikedPost         string `json:"liked_post"`
+	DislikedPost      string `json:"disliked_post"`
 }
 
 type Video struct {
@@ -114,6 +126,12 @@ type NewComment struct {
 	Time        string `json:"time"`
 }
 
+type NewMembership struct {
+	UserID int    `json:"user_id"`
+	Plan   string `json:"plan"`
+	Date   string `json:"date"`
+}
+
 type NewPlaylist struct {
 	UserID      int     `json:"user_id"`
 	Name        *string `json:"name"`
@@ -123,6 +141,7 @@ type NewPlaylist struct {
 	Day         int     `json:"day"`
 	Month       int     `json:"month"`
 	Year        int     `json:"year"`
+	Videos      string  `json:"videos"`
 }
 
 type NewPost struct {
@@ -132,6 +151,7 @@ type NewPost struct {
 	Date        string `json:"date"`
 	Likes       int    `json:"likes"`
 	Dislikes    int    `json:"dislikes"`
+	Title       string `json:"title"`
 }
 
 type NewReply struct {
@@ -156,6 +176,9 @@ type NewUser struct {
 	LikedComment      string `json:"liked_comment"`
 	DislikedComment   string `json:"disliked_comment"`
 	SubscribedChannel string `json:"subscribed_channel"`
+	Playlists         string `json:"playlists"`
+	LikedPost         string `json:"liked_post"`
+	DislikedPost      string `json:"disliked_post"`
 }
 
 type NewVideo struct {

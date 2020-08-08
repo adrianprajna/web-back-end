@@ -36,6 +36,9 @@ type User {
   liked_comment: String!
   disliked_comment: String!
   subscribed_channel: String!
+  playlists: String!
+  liked_post: String!
+  disliked_post: String!
 }
 
 type Playlist {
@@ -48,6 +51,7 @@ type Playlist {
   day: Int!
   month: Int!
   year: Int!
+  videos: String!
 }
 
 type Comment {
@@ -92,17 +96,27 @@ type Post {
   date: String!
   likes: Int!
   dislikes: Int!
+  title: String!
+}
+
+type Membership {
+  id: ID!
+  user_id: Int!
+  plan: String!
+  date: String!
 }
 
 type Query {
   videos: [Video!]!
   comments: [Comment!]!
-  playlists: [Playlist!]!
+  playlists(name: String!): [Playlist!]!
   users: [User!]!
   replies(comment_id: ID!): [Reply!]!
   channel(id: ID!): Channel!
   posts(channel_id: Int!): [Post!]!
   post(id: ID!): Post!
+  playlist(id: ID!): Playlist!
+  membership(user_id: Int!): Membership!
 
   getUser(id: ID!): User!
   getUserByEmail(email: String!): User!
@@ -110,6 +124,8 @@ type Query {
   getAllComments(video_id: Int!): [Comment!]!
   getChannelByUser(user_id: Int!): Channel!
   getAllVideosByTitle(title: String!): [Video!]!
+  getAllUsers(name: String!): [User!]!
+  getAllUserPlaylist(user_id: Int!): [Playlist!]!
 }
 
 input newVideo {
@@ -144,6 +160,9 @@ input newUser {
   liked_comment: String!
   disliked_comment: String!
   subscribed_channel: String!
+  playlists: String!
+  liked_post: String!
+  disliked_post: String!
 }
 
 input newChannel {
@@ -163,6 +182,7 @@ input newPlaylist {
   day: Int!
   month: Int!
   year: Int!
+  videos: String!
 }
 
 input newPost {
@@ -172,6 +192,7 @@ input newPost {
   date: String!
   likes: Int!
   dislikes: Int!
+  title: String!
 }
 
 input newComment {
@@ -196,6 +217,13 @@ input newReply {
   month: Int!
   year: Int!
 }
+
+input newMembership {
+  user_id: Int!
+  plan: String!
+  date: String!
+}
+
 
 type Mutation {
   createVideo(input: newVideo): Video!
@@ -222,4 +250,6 @@ type Mutation {
 
   createPost(input: newPost): Post!
   updatePost(id: ID!, input: newPost): Post!
+
+  createMembership(input: newMembership): Membership!
 }
