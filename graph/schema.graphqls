@@ -106,6 +106,13 @@ type Membership {
   date: String!
 }
 
+type Notification {
+  id: ID!
+  channel_id: Int!
+  title: String!
+  thumbnail: String!
+}
+
 type Query {
   videos: [Video!]!
   comments: [Comment!]!
@@ -117,6 +124,7 @@ type Query {
   post(id: ID!): Post!
   playlist(id: ID!): Playlist!
   membership(user_id: Int!): Membership!
+  notifications: [Notification!]!
 
   getUser(id: ID!): User!
   getUserByEmail(email: String!): User!
@@ -224,6 +232,12 @@ input newMembership {
   date: String!
 }
 
+input newNotification {
+  channel_id: Int!
+  title: String!
+  thumbnail: String!
+}
+
 
 type Mutation {
   createVideo(input: newVideo): Video!
@@ -252,4 +266,6 @@ type Mutation {
   updatePost(id: ID!, input: newPost): Post!
 
   createMembership(input: newMembership): Membership!
+
+  createNotification(input: newNotification): Notification!
 }

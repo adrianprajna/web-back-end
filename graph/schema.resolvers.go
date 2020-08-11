@@ -82,7 +82,21 @@ func (r *mutationResolver) UpdateVideo(ctx context.Context, id string, input *mo
 }
 
 func (r *mutationResolver) DeleteVideo(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented"))
+	var video model.Video
+
+	err := r.DB.Model(&video).Where("id = ?", id).First()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, error := r.DB.Model(&video).Where("id = ?", id).Delete()
+
+	if error != nil {
+		return false, error
+	}
+
+	return true, nil
 }
 
 func (r *mutationResolver) CreatePlaylist(ctx context.Context, input *model.NewPlaylist) (*model.Playlist, error) {
@@ -321,7 +335,27 @@ func (r *mutationResolver) CreateChannel(ctx context.Context, input *model.NewCh
 }
 
 func (r *mutationResolver) UpdateChannel(ctx context.Context, id string, input *model.NewChannel) (*model.Channel, error) {
-	panic(fmt.Errorf("not implemented"))
+	var channel model.Channel
+
+	err := r.DB.Model(&channel).Where("id = ?", id).First()
+
+	if err != nil {
+		return nil, err
+	}
+
+	channel.UserID = input.UserID
+	channel.BackgroundURL = input.BackgroundURL
+	channel.Description = input.Description
+	channel.JoinDate = input.JoinDate
+	channel.Links = input.Links
+
+	_, error := r.DB.Model(&channel).Where("id = ?", id).Update()
+
+	if error != nil {
+		return nil, error
+	}
+
+	return &channel, nil
 }
 
 func (r *mutationResolver) CreatePost(ctx context.Context, input *model.NewPost) (*model.Post, error) {
@@ -372,11 +406,10 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, id string, input *mod
 }
 
 func (r *mutationResolver) CreateMembership(ctx context.Context, input *model.NewMembership) (*model.Membership, error) {
-
 	membership := model.Membership{
 		UserID: input.UserID,
-		Plan: input.Plan,
-		Date: input.Date,
+		Plan:   input.Plan,
+		Date:   input.Date,
 	}
 
 	_, err := r.DB.Model(&membership).Insert()
@@ -386,6 +419,22 @@ func (r *mutationResolver) CreateMembership(ctx context.Context, input *model.Ne
 	}
 
 	return &membership, nil
+}
+
+func (r *mutationResolver) CreateNotification(ctx context.Context, input *model.NewNotification) (*model.Notification, error) {
+	notification := model.Notification{
+		ChannelID: input.ChannelID,
+		Title: input.Title,
+		Thumbnail: input.Thumbnail,
+	}
+
+	_, err := r.DB.Model(&notification).Insert()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &notification, nil
 }
 
 func (r *queryResolver) Videos(ctx context.Context) ([]*model.Video, error) {
@@ -498,6 +547,18 @@ func (r *queryResolver) Membership(ctx context.Context, userID int) (*model.Memb
 	}
 
 	return &membership, nil
+}
+
+func (r *queryResolver) Notifications(ctx context.Context) ([]*model.Notification, error) {
+	var notifs []*model.Notification
+
+	err := r.DB.Model(&notifs).Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return notifs, err
 }
 
 func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {

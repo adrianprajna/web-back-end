@@ -31,6 +31,13 @@ type Membership struct {
 	Date   string `json:"date"`
 }
 
+type Notification struct {
+	ID        string `json:"id"`
+	ChannelID int    `json:"channel_id"`
+	Title     string `json:"title"`
+	Thumbnail string `json:"thumbnail"`
+}
+
 type Playlist struct {
 	ID          string  `json:"id"`
 	UserID      int     `json:"user_id"`
@@ -130,6 +137,12 @@ type NewMembership struct {
 	UserID int    `json:"user_id"`
 	Plan   string `json:"plan"`
 	Date   string `json:"date"`
+}
+
+type NewNotification struct {
+	ChannelID int    `json:"channel_id"`
+	Title     string `json:"title"`
+	Thumbnail string `json:"thumbnail"`
 }
 
 type NewPlaylist struct {

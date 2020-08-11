@@ -73,25 +73,33 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateChannel    func(childComplexity int, input *model.NewChannel) int
-		CreateComment    func(childComplexity int, input *model.NewComment) int
-		CreateMembership func(childComplexity int, input *model.NewMembership) int
-		CreatePlaylist   func(childComplexity int, input *model.NewPlaylist) int
-		CreatePost       func(childComplexity int, input *model.NewPost) int
-		CreateReply      func(childComplexity int, input *model.NewReply) int
-		CreateUser       func(childComplexity int, input *model.NewUser) int
-		CreateVideo      func(childComplexity int, input *model.NewVideo) int
-		DeleteComment    func(childComplexity int, id string) int
-		DeletePlaylist   func(childComplexity int, id string) int
-		DeleteReply      func(childComplexity int, id string) int
-		DeleteVideo      func(childComplexity int, id string) int
-		UpdateChannel    func(childComplexity int, id string, input *model.NewChannel) int
-		UpdateComment    func(childComplexity int, id string, input *model.NewComment) int
-		UpdatePlaylist   func(childComplexity int, id string, input *model.NewPlaylist) int
-		UpdatePost       func(childComplexity int, id string, input *model.NewPost) int
-		UpdateReply      func(childComplexity int, id string, input *model.NewReply) int
-		UpdateUser       func(childComplexity int, id string, input *model.NewUser) int
-		UpdateVideo      func(childComplexity int, id string, input *model.NewVideo) int
+		CreateChannel      func(childComplexity int, input *model.NewChannel) int
+		CreateComment      func(childComplexity int, input *model.NewComment) int
+		CreateMembership   func(childComplexity int, input *model.NewMembership) int
+		CreateNotification func(childComplexity int, input *model.NewNotification) int
+		CreatePlaylist     func(childComplexity int, input *model.NewPlaylist) int
+		CreatePost         func(childComplexity int, input *model.NewPost) int
+		CreateReply        func(childComplexity int, input *model.NewReply) int
+		CreateUser         func(childComplexity int, input *model.NewUser) int
+		CreateVideo        func(childComplexity int, input *model.NewVideo) int
+		DeleteComment      func(childComplexity int, id string) int
+		DeletePlaylist     func(childComplexity int, id string) int
+		DeleteReply        func(childComplexity int, id string) int
+		DeleteVideo        func(childComplexity int, id string) int
+		UpdateChannel      func(childComplexity int, id string, input *model.NewChannel) int
+		UpdateComment      func(childComplexity int, id string, input *model.NewComment) int
+		UpdatePlaylist     func(childComplexity int, id string, input *model.NewPlaylist) int
+		UpdatePost         func(childComplexity int, id string, input *model.NewPost) int
+		UpdateReply        func(childComplexity int, id string, input *model.NewReply) int
+		UpdateUser         func(childComplexity int, id string, input *model.NewUser) int
+		UpdateVideo        func(childComplexity int, id string, input *model.NewVideo) int
+	}
+
+	Notification struct {
+		ChannelID func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Thumbnail func(childComplexity int) int
+		Title     func(childComplexity int) int
 	}
 
 	Playlist struct {
@@ -130,6 +138,7 @@ type ComplexityRoot struct {
 		GetUserByEmail      func(childComplexity int, email string) int
 		GetVideo            func(childComplexity int, id string) int
 		Membership          func(childComplexity int, userID int) int
+		Notifications       func(childComplexity int) int
 		Playlist            func(childComplexity int, id string) int
 		Playlists           func(childComplexity int, name string) int
 		Post                func(childComplexity int, id string) int
@@ -211,6 +220,7 @@ type MutationResolver interface {
 	CreatePost(ctx context.Context, input *model.NewPost) (*model.Post, error)
 	UpdatePost(ctx context.Context, id string, input *model.NewPost) (*model.Post, error)
 	CreateMembership(ctx context.Context, input *model.NewMembership) (*model.Membership, error)
+	CreateNotification(ctx context.Context, input *model.NewNotification) (*model.Notification, error)
 }
 type QueryResolver interface {
 	Videos(ctx context.Context) ([]*model.Video, error)
@@ -223,6 +233,7 @@ type QueryResolver interface {
 	Post(ctx context.Context, id string) (*model.Post, error)
 	Playlist(ctx context.Context, id string) (*model.Playlist, error)
 	Membership(ctx context.Context, userID int) (*model.Membership, error)
+	Notifications(ctx context.Context) ([]*model.Notification, error)
 	GetUser(ctx context.Context, id string) (*model.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*model.User, error)
 	GetVideo(ctx context.Context, id string) (*model.Video, error)
@@ -424,6 +435,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateMembership(childComplexity, args["input"].(*model.NewMembership)), true
 
+	case "Mutation.createNotification":
+		if e.complexity.Mutation.CreateNotification == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createNotification_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateNotification(childComplexity, args["input"].(*model.NewNotification)), true
+
 	case "Mutation.createPlaylist":
 		if e.complexity.Mutation.CreatePlaylist == nil {
 			break
@@ -615,6 +638,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateVideo(childComplexity, args["id"].(string), args["input"].(*model.NewVideo)), true
+
+	case "Notification.channel_id":
+		if e.complexity.Notification.ChannelID == nil {
+			break
+		}
+
+		return e.complexity.Notification.ChannelID(childComplexity), true
+
+	case "Notification.id":
+		if e.complexity.Notification.ID == nil {
+			break
+		}
+
+		return e.complexity.Notification.ID(childComplexity), true
+
+	case "Notification.thumbnail":
+		if e.complexity.Notification.Thumbnail == nil {
+			break
+		}
+
+		return e.complexity.Notification.Thumbnail(childComplexity), true
+
+	case "Notification.title":
+		if e.complexity.Notification.Title == nil {
+			break
+		}
+
+		return e.complexity.Notification.Title(childComplexity), true
 
 	case "Playlist.day":
 		if e.complexity.Playlist.Day == nil {
@@ -868,6 +919,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Membership(childComplexity, args["user_id"].(int)), true
+
+	case "Query.notifications":
+		if e.complexity.Query.Notifications == nil {
+			break
+		}
+
+		return e.complexity.Query.Notifications(childComplexity), true
 
 	case "Query.playlist":
 		if e.complexity.Query.Playlist == nil {
@@ -1409,6 +1467,13 @@ type Membership {
   date: String!
 }
 
+type Notification {
+  id: ID!
+  channel_id: Int!
+  title: String!
+  thumbnail: String!
+}
+
 type Query {
   videos: [Video!]!
   comments: [Comment!]!
@@ -1420,6 +1485,7 @@ type Query {
   post(id: ID!): Post!
   playlist(id: ID!): Playlist!
   membership(user_id: Int!): Membership!
+  notifications: [Notification!]!
 
   getUser(id: ID!): User!
   getUserByEmail(email: String!): User!
@@ -1527,6 +1593,12 @@ input newMembership {
   date: String!
 }
 
+input newNotification {
+  channel_id: Int!
+  title: String!
+  thumbnail: String!
+}
+
 
 type Mutation {
   createVideo(input: newVideo): Video!
@@ -1555,6 +1627,8 @@ type Mutation {
   updatePost(id: ID!, input: newPost): Post!
 
   createMembership(input: newMembership): Membership!
+
+  createNotification(input: newNotification): Notification!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1597,6 +1671,20 @@ func (ec *executionContext) field_Mutation_createMembership_args(ctx context.Con
 	var arg0 *model.NewMembership
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalOnewMembership2ᚖGo_BackEndᚋgraphᚋmodelᚐNewMembership(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createNotification_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewNotification
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOnewNotification2ᚖGo_BackEndᚋgraphᚋmodelᚐNewNotification(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3604,6 +3692,183 @@ func (ec *executionContext) _Mutation_createMembership(ctx context.Context, fiel
 	return ec.marshalNMembership2ᚖGo_BackEndᚋgraphᚋmodelᚐMembership(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_createNotification(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createNotification_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateNotification(rctx, args["input"].(*model.NewNotification))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Notification)
+	fc.Result = res
+	return ec.marshalNNotification2ᚖGo_BackEndᚋgraphᚋmodelᚐNotification(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_id(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_channel_id(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ChannelID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_title(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_thumbnail(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Notification",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Thumbnail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Playlist_id(ctx context.Context, field graphql.CollectedField, obj *model.Playlist) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4600,6 +4865,40 @@ func (ec *executionContext) _Query_membership(ctx context.Context, field graphql
 	res := resTmp.(*model.Membership)
 	fc.Result = res
 	return ec.marshalNMembership2ᚖGo_BackEndᚋgraphᚋmodelᚐMembership(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_notifications(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Notifications(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Notification)
+	fc.Result = res
+	return ec.marshalNNotification2ᚕᚖGo_BackEndᚋgraphᚋmodelᚐNotificationᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7620,6 +7919,36 @@ func (ec *executionContext) unmarshalInputnewMembership(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputnewNotification(ctx context.Context, obj interface{}) (model.NewNotification, error) {
+	var it model.NewNotification
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channel_id":
+			var err error
+			it.ChannelID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "title":
+			var err error
+			it.Title, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "thumbnail":
+			var err error
+			it.Thumbnail, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputnewPlaylist(ctx context.Context, obj interface{}) (model.NewPlaylist, error) {
 	var it model.NewPlaylist
 	var asMap = obj.(map[string]interface{})
@@ -8294,6 +8623,53 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createNotification":
+			out.Values[i] = ec._Mutation_createNotification(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notificationImplementors = []string{"Notification"}
+
+func (ec *executionContext) _Notification(ctx context.Context, sel ast.SelectionSet, obj *model.Notification) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notificationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Notification")
+		case "id":
+			out.Values[i] = ec._Notification_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "channel_id":
+			out.Values[i] = ec._Notification_channel_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "title":
+			out.Values[i] = ec._Notification_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "thumbnail":
+			out.Values[i] = ec._Notification_thumbnail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8586,6 +8962,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_membership(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "notifications":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_notifications(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -9360,6 +9750,57 @@ func (ec *executionContext) marshalNMembership2ᚖGo_BackEndᚋgraphᚋmodelᚐM
 	return ec._Membership(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNNotification2Go_BackEndᚋgraphᚋmodelᚐNotification(ctx context.Context, sel ast.SelectionSet, v model.Notification) graphql.Marshaler {
+	return ec._Notification(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNotification2ᚕᚖGo_BackEndᚋgraphᚋmodelᚐNotificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Notification) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNotification2ᚖGo_BackEndᚋgraphᚋmodelᚐNotification(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNNotification2ᚖGo_BackEndᚋgraphᚋmodelᚐNotification(ctx context.Context, sel ast.SelectionSet, v *model.Notification) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Notification(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNPlaylist2Go_BackEndᚋgraphᚋmodelᚐPlaylist(ctx context.Context, sel ast.SelectionSet, v model.Playlist) graphql.Marshaler {
 	return ec._Playlist(ctx, sel, &v)
 }
@@ -10116,6 +10557,18 @@ func (ec *executionContext) unmarshalOnewMembership2ᚖGo_BackEndᚋgraphᚋmode
 		return nil, nil
 	}
 	res, err := ec.unmarshalOnewMembership2Go_BackEndᚋgraphᚋmodelᚐNewMembership(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOnewNotification2Go_BackEndᚋgraphᚋmodelᚐNewNotification(ctx context.Context, v interface{}) (model.NewNotification, error) {
+	return ec.unmarshalInputnewNotification(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOnewNotification2ᚖGo_BackEndᚋgraphᚋmodelᚐNewNotification(ctx context.Context, v interface{}) (*model.NewNotification, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOnewNotification2Go_BackEndᚋgraphᚋmodelᚐNewNotification(ctx, v)
 	return &res, err
 }
 
